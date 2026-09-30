@@ -1,0 +1,417 @@
+version: 1
+widgets:
+  OVMSWidget:
+    tags:
+      - custom
+      - dark
+    props:
+      parameters:
+        - context: item
+          default: Twizy_V_B_Soc
+          description: Battery state of charge
+          label: Battery SOC
+          name: socItem
+          required: true
+          type: TEXT
+          groupName: general
+        - context: item
+          default: Twizy_V_C_Charging
+          description: Charging state
+          label: Charging state
+          name: chargingItem
+          required: true
+          type: TEXT
+          groupName: general
+        - context: item
+          default: Twizy_V_C_Current
+          description: Actual charging current
+          label: Charge current
+          name: currentItem
+          required: true
+          type: TEXT
+          groupName: general
+        - context: item
+          default: Twizy_V_C_Climit
+          description: Maximum charging current
+          label: Charge current limit
+          name: currentLimitItem
+          required: true
+          type: TEXT
+          groupName: general
+        - context: item
+          default: Twizy_Cmd_Charge_Speed
+          description: Maximum charging index
+          label: Charge current index limit
+          name: currentLimitIndex
+          required: true
+          type: TEXT
+          groupName: general
+        - context: item
+          default: Twizy_Cmd_Charge_Speed_Response
+          description: Maximum charging index response
+          label: Charge current index response
+          name: currentLimitIndexResponse
+          required: true
+          type: TEXT
+          groupName: general
+        - context: item
+          default: Twizy_V_C_Time
+          description: Charging duration so far, in seconds
+          label: Charge duration
+          name: durationItem
+          required: true
+          type: TEXT
+          groupName: general
+        - context: item
+          default: Twizy_V_C_Duration_Soc
+          description: Time remaining to the target SOC, in seconds
+          label: Time to SOC target
+          name: targetTimeItem
+          required: true
+          type: TEXT
+          groupName: general
+        - context: item
+          default: Twizy_V_C_Limit_Soc
+          description: Target battery SOC
+          label: Target SOC
+          name: targetSocItem
+          required: true
+          type: TEXT
+          groupName: general
+        - context: item
+          default: Twizy_Cmd_Charge_Limit_Soc
+          description: Set Target battery SOC
+          label: Set Target SOC
+          name: targetSocItemSet
+          required: true
+          type: TEXT
+          groupName: general
+        - context: item
+          default: Twizy_Cmd_Charge_Limit_Soc_Response
+          description: Set Target battery SOC Response
+          label: Set Target SOC Response
+          name: targetSocItemSetResponse
+          required: true
+          type: TEXT
+          groupName: general
+        - context: item
+          default: Twizy_V_E_Parktime
+          description: Seconds Parked (turned off)
+          label: Seconds Parked (turned off)
+          name: secondsParked
+          required: true
+          type: TEXT
+          groupName: general
+        - default: Twizy
+          label: Headline
+          name: headline
+          required: false
+          type: TEXT
+          groupName: header
+        - default: twizy.png
+          label: icon
+          name: heroIcon
+          required: false
+          type: TEXT
+          groupName: images
+        - default: 0
+          description: Minimum charge current index
+          label: Minimum current
+          name: currentMin
+          required: false
+          type: INTEGER
+          groupName: controls
+        - default: 6
+          description: Maximum charge current index
+          label: Maximum current
+          name: currentMax
+          required: false
+          type: INTEGER
+          groupName: controls
+        - default: 1
+          description: Charge current step
+          label: Current step
+          name: currentStep
+          required: false
+          type: INTEGER
+          groupName: controls
+      parameterGroups:
+        - name: general
+          label: General settings
+          description: Items used by the Twizy charging widget
+        - name: header
+          label: Header
+        - name: controls
+          label: Charge current control
+        - name: images
+          label: Images
+    component: f7-block
+    config:
+      class:
+        - no-padding
+        - no-margin
+      style:
+        position: relative
+        user-select: none
+        -moz-user-select: none
+        -ms-user-select: none
+        -webkit-user-select: none
+    slots:
+      default:
+        - component: oh-icon
+          config:
+            icon: =props.heroIcon
+            style:
+              max-width: min(max(70px, 18vw), 110px)
+              position: absolute
+              right: 18px
+              top: 8px
+              width: 100%
+              z-index: 20
+        - component: div
+          config:
+            style:
+              position: absolute
+              top: 8px
+              left: 18px
+              right: calc(18px + min(max(70px, 18vw), 110px) / 2)
+              height: 60px
+              z-index: 15
+              pointer-events: none
+          slots:
+            default:
+              - component: div
+                config:
+                  innerHTML: <style>@keyframes twzflow{0%{left:0;opacity:0}15%{opacity:1}85%{opacity:1}100%{left:100%;opacity:0}}</style>
+              - component: div
+                config:
+                  style:
+                    position: absolute
+                    top: 50%
+                    left: 0
+                    transform: translateY(-50%)
+                    border-radius: 50%
+                    background: rgb(255,197,28)
+                    display: '=items[props.chargingItem].state=="yes" ? "block" : "none"'
+                    width: =Math.round(6 + Math.min(Math.max(Number.parseFloat(items[props.currentItem].state) || 0, 0), 35) / 35 * 12) + "px"
+                    height: =Math.round(6 + Math.min(Math.max(Number.parseFloat(items[props.currentItem].state) || 0, 0), 35) / 35 * 12) + "px"
+                    box-shadow: ="0 0 " + Math.round(6 + Math.min(Math.max(Number.parseFloat(items[props.currentItem].state) || 0, 0), 35) / 35 * 12) + "px rgba(255,197,28,0.8)"
+                    animation: ="twzflow " + (6 - Math.min(Math.max(Number.parseFloat(items[props.currentItem].state) || 0, 0), 35) / 35 * 4.5).toFixed(2) + "s linear infinite"
+        - component: f7-card
+          config:
+            style:
+              background: rgb(57,60,76)
+              border-radius: 20px
+              margin: 0
+              min-height: 330px
+              overflow: hidden
+              position: relative
+          slots:
+            default:
+              - component: f7-card-content
+                config:
+                  style:
+                    padding: 18px
+                    position: relative
+                    z-index: 10
+                slots:
+                  default:
+                    - component: f7-row
+                      config:
+                        style:
+                          align-items: center
+                          min-height: 45px
+                      slots:
+                        default:
+                          - component: f7-col
+                            config:
+                              width: 70%
+                            slots:
+                              default:
+                                - component: Label
+                                  config:
+                                    style:
+                                      color: rgba(255,255,255,0.95)
+                                      font-size: 19px
+                                      font-weight: 600
+                                      letter-spacing: 0.5px
+                                      text: =props.headline
+                                - component: Label
+                                  config:
+                                    style:
+                                      color: '=items[props.chargingItem].state == "yes" ? "rgb(255,197,28)" : "rgba(255,255,255,0.55)"'
+                                      font-size: 13px
+                                      font-weight: 500
+                                      margin-top: 3px
+                                    text: '=items[props.chargingItem].state == "yes" ? "CHARGING" : "NOT CHARGING"'
+                    - component: f7-row
+                      config:
+                        style:
+                          justify-content: center
+                          margin-top: 8px
+                      slots:
+                        default:
+                          - component: f7-col
+                            config:
+                              width: 100%
+                            slots:
+                              default:
+                                - component: oh-gauge
+                                  config:
+                                    type: semicircle
+                                    min: 0
+                                    max: 100
+                                    value: =Number.parseFloat(items[props.socItem].state)
+                                    size: 190
+                                    borderWidth: 12
+                                    borderColor: rgba(255,255,255,0.12)
+                                    borderBgColor: rgba(255,255,255,0.12)
+                                    valueText: =Number.parseFloat(items[props.socItem].state).toFixed(0) + "%"
+                                    valueTextColor: rgba(255,255,255,0.95)
+                                    valueFontSize: 28
+                                    style:
+                                      margin: 0 auto
+                                - component: Label
+                                  config:
+                                    style:
+                                      color: rgba(255,255,255,0.55)
+                                      display: block
+                                      font-size: 12px
+                                      margin-top: -10px
+                                      margin-left: 30px
+                                      text-align: left
+                                    text: = "TARGET " + Number.parseFloat(items[props.targetSocItem].state).toFixed(0) + "% (est " + Number.parseFloat(items[props.targetTimeItem].state).toFixed(0) + "m)"
+                    - component: f7-row
+                      config:
+                        style:
+                          align-items: center
+                          margin-top: 5px
+                      slots:
+                        default:
+                          - component: f7-col
+                            config:
+                              width: 45%
+                            slots:
+                              default:
+                                - component: Label
+                                  config:
+                                    style:
+                                      color: rgba(255,255,255,0.55)
+                                      font-size: 12px
+                                    text: CHARGE CURRENT
+                                - component: Label
+                                  config:
+                                    style:
+                                      color: rgba(255,255,255,0.95)
+                                      font-size: 22px
+                                      font-weight: 600
+                                      margin-top: 2px
+                                    text: '=items[props.chargingItem].state == "yes" ? Number.parseFloat(items[props.currentItem].state).toFixed(1) + " A (" + Number.parseFloat(items[props.currentItem].state*80).toFixed(0) + " w)" : "-"'
+                          - component: f7-col
+                            config:
+                              width: 55%
+                              style:
+                                text-align: right
+                            slots:
+                              default:
+                                - component: Label
+                                  config:
+                                    style:
+                                      color: rgba(255,255,255,0.55)
+                                      font-size: 12px
+                                    text: Charge Speed
+                                - component: Label
+                                  config:
+                                    style:
+                                      color: rgb(255,197,28)
+                                      font-size: 22px
+                                      font-weight: 600
+                                      margin-top: 2px
+                                    text: =Number.parseFloat(items[props.currentLimitItem].state).toFixed(1) + " A (" + Number.parseFloat(items[props.currentLimitItem].state*80).toFixed(0) + " w)"
+                    - component: f7-row
+                      config:
+                        style:
+                          align-items: center
+                          margin-top: 14px
+                      slots:
+                        default:
+                          - component: f7-col
+                            config:
+                              width: 30%
+                            slots:
+                              default:
+                                - component: Label
+                                  config:
+                                    style:
+                                      color: rgba(255,255,255,0.55)
+                                      font-size: 11px
+                                    text: SET CHARGE SPEED
+                          - component: f7-col
+                            config:
+                              width: 70%
+                            slots:
+                              default:
+                                - component: oh-stepper
+                                  config:
+                                    item: =props.currentLimitIndex
+                                    min: =Number(props.currentMin)
+                                    max: =Number(props.currentMax)
+                                    step: =Number(props.currentStep)
+                                    fill: true
+                                    round: true
+                                    raised: true
+                                    color: yellow
+                                    style:
+                                      margin: 0
+                    - component: oh-grid-row
+                      config: {}
+                      slots:
+                        default:
+                          - component: oh-grid-col
+                            config:
+                              style:
+                                font-size: 17px
+                                font-weight: 600
+                                margin-top: 3px
+                            slots:
+                              default:
+                                - component: oh-list-card
+                                  config: {}
+                                  slots:
+                                    default:
+                                      - component: oh-input-item
+                                        config:
+                                          icon: oh:battery
+                                          inputmode: numeric
+                                          item: =props.targetSocItemSet
+                                          outline: true
+                                          sendButton: true
+                                          showTime: false
+                                          min: 60
+                                          max: 100
+                                          step: 1
+                                          title: Max Charge %ge
+                                          type: number
+                                          useDisplayState: true
+                                          style:
+                                            background: rgb(57,60,76)
+                    - component: f7-col
+                      config:
+                        width: 50%
+                        style:
+                          text-align: right
+                      slots:
+                        default:
+                          - component: Label
+                            config:
+                              style:
+                                color: rgba(255,255,255,0.45)
+                                font-size: 11px
+                              text: STATUS
+                          - component: Label
+                            config:
+                              style:
+                                color: '=items[props.chargingItem].state == "yes" ? "rgb(255,197,28)" : "rgba(255,255,255,0.65)"'
+                                font-size: 14px
+                                font-weight: 600
+                              text: '=items[props.chargingItem].state == "yes" ? "CHARGING for "+Math.floor(Number.parseFloat(items[props.durationItem].state) / 3600).toString().padStart(2,"0") + ":" + Math.floor((Number.parseFloat(items[props.durationItem].state) % 3600) / 60).toString().padStart(2,"0") : "IDLE for " + +Math.floor(Number.parseFloat(items[props.secondsParked].state) / 3600).toString().padStart(2,"0") + ":" + Math.floor((Number.parseFloat(items[props.secondsParked].state) % 3600) / 60).toString().padStart(2,"0")'
